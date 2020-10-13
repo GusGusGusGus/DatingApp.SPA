@@ -15,9 +15,10 @@ model: any = {};
   }
 
   register() {
-    this.authService.register(this.model).subscribe(() => {
+    this.authService.register(this.model).subscribe((data: any[]) => {
       console.log('Registration successful');
     }, error => {
+      console.log('this is the error:');
       console.log(error);
     });
   }
