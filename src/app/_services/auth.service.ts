@@ -4,12 +4,15 @@ import {  map } from 'rxjs/operators';
 import { Observable } from 'rxjs/Observable';
 import { catchError } from 'rxjs/operators/catchError';
 import 'rxjs/add/observable/throw';
+import { JwtHelper, tokenNotExpired } from 'angular2-jwt';
 
 
 @Injectable()
 export class AuthService {
     baseUrl = 'http://localhost:5000/api/auth/';
     userToken: any;
+    decodedToken: any;
+    jwtHelper: JwtHelper = new JwtHelper();
 
 constructor(private http: HttpClient) { }
 
@@ -21,6 +24,8 @@ login(model: any) {
         console.log(user);
         if (user) {
             localStorage.setItem('token', user.tokenString);
+            this.decodedToken = this.jwtHelper.decodeToken(user.tokenString);
+            console.log(this.decodedToken);
             this.userToken = user.tokenString;
         }
         }),
@@ -30,6 +35,10 @@ login(model: any) {
 
 register(model: any) {
     return this.http.post(this.baseUrl + 'register', model, this.requestOptions()).pipe(catchError(this.handleError));
+}
+
+loggedIn() {
+    return tokenNotExpired('token');
 }
 
 private requestOptions(){
